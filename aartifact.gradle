@@ -1,25 +1,21 @@
 apply plugin: 'maven-publish'
 
-group = 'com.some.group'
-version = '0.1.0'
+publications {
+    maven(MavenPublication) {
+        groupId aarGroup
+        version aarVersion
+        artifactId project.getName()
+        artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId rootProject.ext.groupId
-            artifactId project.getName()
-            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-
-            // generate pom nodes for dependencies
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
-                configurations.compile.allDependencies.each { dependency ->
-                    if(dependency.group) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', dependency.group)
-                        dependencyNode.appendNode('artifactId', dependency.name)
-                        dependencyNode.appendNode('version', dependency.version)
-                    }
+        // generate pom nodes for dependencies
+        pom.withXml {
+            def dependenciesNode = asNode().appendNode('dependencies')
+            configurations.compile.allDependencies.each { dependency ->
+                if(dependency.group) {
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', dependency.group)
+                    dependencyNode.appendNode('artifactId', dependency.name)
+                    dependencyNode.appendNode('version', dependency.version)
                 }
             }
         }
