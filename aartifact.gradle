@@ -2,8 +2,8 @@ apply plugin: 'maven-publish'
 
 publications {
     maven(MavenPublication) {
-        groupId aarGroup
-        version aarVersion
+        groupId aartifact.group
+        version aartifact.version
         artifactId project.getName()
         artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
 
