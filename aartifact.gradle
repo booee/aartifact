@@ -1,21 +1,29 @@
+import javax.naming.ConfigurationException
+
 apply plugin: 'maven-publish'
 
-publications {
-    maven(MavenPublication) {
-        groupId aartifact.group
-        version aartifact.version
-        artifactId project.getName()
-        artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+publishing {
+    publications {
+        maven(MavenPublication) {
+            if(!project.hasProperty('aartifact')) {
+                throw new ConfigurationException('Declare `aartifact` configs in your project\'s extra properties. See documentation for more details')
+            }
 
-        // generate pom nodes for dependencies
-        pom.withXml {
-            def dependenciesNode = asNode().appendNode('dependencies')
-            configurations.compile.allDependencies.each { dependency ->
-                if(dependency.group) {
-                    def dependencyNode = dependenciesNode.appendNode('dependency')
-                    dependencyNode.appendNode('groupId', dependency.group)
-                    dependencyNode.appendNode('artifactId', dependency.name)
-                    dependencyNode.appendNode('version', dependency.version)
+            groupId aartifact.group
+            version aartifact.version
+            artifactId project.getName()
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+
+            // generate pom nodes for dependencies
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.compile.allDependencies.each { dependency ->
+                    if(dependency.group) {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', dependency.group)
+                        dependencyNode.appendNode('artifactId', dependency.name)
+                        dependencyNode.appendNode('version', dependency.version)
+                    }
                 }
             }
         }
